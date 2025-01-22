@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react'
 import api from '../api/api';
 import axios from 'axios';
 import Loader from '../components/Loader';
@@ -15,8 +14,7 @@ interface Hotel {
     facilities: string[];
 }
 
-function UpdateHotel() {
-    const { id } = useParams();
+function AddHotel() {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<Hotel>({
         title: '',
@@ -32,31 +30,17 @@ function UpdateHotel() {
     const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dgjwzufmf/image/upload';
     const UPLOAD_PRESET = 'odyssey';
 
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const response = await api.get(`/api/hotels/getHotelById/${id}`, { headers: { "Authorization": `Bearer ${tokenStr}` } });
-            setData(response.data);
-            console.log(data);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
-        }
-    }
-    useEffect(() => {
-        fetchData();
-    }, [id]);
-    function updateHotelData(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    function addHotelData(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         setData({ ...data, [e.target.name]: e.target.value });
     }
-    async function updateDetails() {
+    async function addDetails() {
         setLoading(true);
         try {
-            await api.put(`/api/hotels/updateHotel/${id}`, data, { headers: { "Authorization": `Bearer ${tokenStr}` } });
+            await api.post(`/api/hotels/addHotel`, data, { headers: { "Authorization": `Bearer ${tokenStr}` } });
         } catch (error) {
             console.log(error);
         } finally {
+            setData({ title: '', locationCity: '', locationCountry: '', locationMap: '', descriptionShort: '', descriptionLong: '', imgUrl: [], facilities: [] })
             setLoading(false);
         }
     }
@@ -98,33 +82,33 @@ function UpdateHotel() {
         <div>
             {loading ? <Loader /> : (
                 <div className='main-container'>
-                    <h1>Edit Hotel Details</h1>
+                    <h1>Add a New Hotel</h1>
                     <div className='form-group'>
                         <div className="form-grid">
                             <div className='form-item'>
                                 <label htmlFor='title'>title</label>
-                                <input type='text' id='title' name='title' value={data.title} onChange={(e) => updateHotelData(e)} />
+                                <input type='text' id='title' name='title' value={data.title} onChange={(e) => addHotelData(e)} />
                             </div>
                             <div className='form-item'>
                                 <label htmlFor='locationCity'>City</label>
-                                <input type='text' id='locationCity' name='locationCity' value={data.locationCity} onChange={(e) => updateHotelData(e)} />
+                                <input type='text' id='locationCity' name='locationCity' value={data.locationCity} onChange={(e) => addHotelData(e)} />
                             </div>
                             <div className='form-item'>
                                 <label htmlFor='locationCountry'>Country</label>
-                                <input type='text' id='locationCountry' name='locationCountry' value={data.locationCountry} onChange={(e) => updateHotelData(e)} />
+                                <input type='text' id='locationCountry' name='locationCountry' value={data.locationCountry} onChange={(e) => addHotelData(e)} />
                             </div>
                             <div className='form-item'>
                                 <label htmlFor='locationMap'>Google Maps Location Link</label>
-                                <input type='text' id='locationMap' name='locationMap' value={data.locationMap} onChange={(e) => updateHotelData(e)} />
+                                <input type='text' id='locationMap' name='locationMap' value={data.locationMap} onChange={(e) => addHotelData(e)} />
                             </div>
                             <div className='form-item'>
                                 <label htmlFor='descriptionShort'>Short Description</label>
-                                <input type='text' id='descriptionShort' name='descriptionShort' value={data.descriptionShort} onChange={(e) => updateHotelData(e)} />
+                                <input type='text' id='descriptionShort' name='descriptionShort' value={data.descriptionShort} onChange={(e) => addHotelData(e)} />
                             </div>
                         </div>
                         <div className='form-item'>
                             <label htmlFor='descriptionLong'>Description</label>
-                            <textarea id='descriptionLong' name='descriptionLong' value={data.descriptionLong} onChange={(e) => updateHotelData(e)}></textarea>
+                            <textarea id='descriptionLong' name='descriptionLong' value={data.descriptionLong} onChange={(e) => addHotelData(e)}></textarea>
                         </div>
                         <div className="form-item">
                             {data.imgUrl.length < 5 && (
@@ -150,7 +134,7 @@ function UpdateHotel() {
                                 ))}
                             </div>
                         </div>
-                        <button onClick={updateDetails}>Update Details</button>
+                        <button onClick={addDetails}>Add New Hotel</button>
                     </div>
                 </div>
             )}
@@ -158,4 +142,4 @@ function UpdateHotel() {
     )
 }
 
-export default UpdateHotel
+export default AddHotel

@@ -1,59 +1,40 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react'
 import api from '../api/api';
 import axios from 'axios';
 import Loader from '../components/Loader';
 
-interface Hotel {
+interface Resturant {
     title: string;
-    locationCity: string;
-    locationCountry: string;
-    locationMap: string;
-    descriptionShort: string;
-    descriptionLong: string;
-    imgUrl: string[];
+    location_city: string;
+    location_country: string;
+    location_map: string;
+    description: string;
+    image_url: string[];
     facilities: string[];
 }
 
-function UpdateHotel() {
-    const { id } = useParams();
+function AddResturant() {
     const [loading, setLoading] = useState(false);
-    const [data, setData] = useState<Hotel>({
+    const [data, setData] = useState<Resturant>({
         title: '',
-        locationCity: '',
-        locationCountry: '',
-        locationMap: '',
-        descriptionShort: '',
-        descriptionLong: '',
-        imgUrl: [],
+        location_city: '',
+        location_country: '',
+        location_map: '',
+        description: '',
+        image_url: [],
         facilities: []
     });
     const tokenStr = localStorage.getItem('authToken');
     const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dgjwzufmf/image/upload';
     const UPLOAD_PRESET = 'odyssey';
 
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            const response = await api.get(`/api/hotels/getHotelById/${id}`, { headers: { "Authorization": `Bearer ${tokenStr}` } });
-            setData(response.data);
-            console.log(data);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
-        }
-    }
-    useEffect(() => {
-        fetchData();
-    }, [id]);
-    function updateHotelData(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    function addRestaurantData(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         setData({ ...data, [e.target.name]: e.target.value });
     }
-    async function updateDetails() {
+    async function addDetails() {
         setLoading(true);
         try {
-            await api.put(`/api/hotels/updateHotel/${id}`, data, { headers: { "Authorization": `Bearer ${tokenStr}` } });
+            await api.post(`/api/restaurant/addRestaurant`, data, { headers: { "Authorization": `Bearer ${tokenStr}` } });
         } catch (error) {
             console.log(error);
         } finally {
@@ -74,71 +55,68 @@ function UpdateHotel() {
         try {
             setLoading(true);
             const response = await axios.post(CLOUDINARY_URL, formData);
-            const imageUrl = response.data.secure_url;
+            const image_url = response.data.secure_url;
             setData((prevData) => ({
                 ...prevData,
-                imgUrl: [...prevData.imgUrl, imageUrl],
+                image_url: [...prevData.image_url, image_url],
             }));
             alert('Image uploaded successfully!');
         } catch (error) {
             console.error('Error uploading image:', error);
             alert('Failed to upload image.');
         } finally {
+            setData({ title: '', location_city: '', location_country: '', location_map: '', description: '', image_url: [], facilities: [] })
             setLoading(false);
         }
     };
 
     function deleteImage(index: number) {
         console.log(index);
-        const newImages = data.imgUrl.filter((_img, i) => i !== index);
-        setData({ ...data, imgUrl: newImages });
+        const newImages = data.image_url.filter((_img, i) => i !== index);
+        setData({ ...data, image_url: newImages });
     }
 
     return (
         <div>
             {loading ? <Loader /> : (
                 <div className='main-container'>
-                    <h1>Edit Hotel Details</h1>
+                    <h1>Add a New Resturants</h1>
                     <div className='form-group'>
                         <div className="form-grid">
                             <div className='form-item'>
                                 <label htmlFor='title'>title</label>
-                                <input type='text' id='title' name='title' value={data.title} onChange={(e) => updateHotelData(e)} />
+                                <input type='text' id='title' name='title' value={data.title} onChange={(e) => addRestaurantData(e)} />
                             </div>
                             <div className='form-item'>
-                                <label htmlFor='locationCity'>City</label>
-                                <input type='text' id='locationCity' name='locationCity' value={data.locationCity} onChange={(e) => updateHotelData(e)} />
+                                <label htmlFor='location_city'>City</label>
+                                <input type='text' id='location_city' name='location_city' value={data.location_city} onChange={(e) => addRestaurantData(e)} />
                             </div>
                             <div className='form-item'>
-                                <label htmlFor='locationCountry'>Country</label>
-                                <input type='text' id='locationCountry' name='locationCountry' value={data.locationCountry} onChange={(e) => updateHotelData(e)} />
+                                <label htmlFor='location_country'>Country</label>
+                                <input type='text' id='location_country' name='location_country' value={data.location_country} onChange={(e) => addRestaurantData(e)} />
                             </div>
                             <div className='form-item'>
-                                <label htmlFor='locationMap'>Google Maps Location Link</label>
-                                <input type='text' id='locationMap' name='locationMap' value={data.locationMap} onChange={(e) => updateHotelData(e)} />
+                                <label htmlFor='location_map'>Google Maps Location Link</label>
+                                <input type='text' id='location_map' name='location_map' value={data.location_map} onChange={(e) => addRestaurantData(e)} />
                             </div>
                             <div className='form-item'>
-                                <label htmlFor='descriptionShort'>Short Description</label>
-                                <input type='text' id='descriptionShort' name='descriptionShort' value={data.descriptionShort} onChange={(e) => updateHotelData(e)} />
+                                <label htmlFor='description'>Short Description</label>
+                                <input type='text' id='description' name='description' value={data.description} onChange={(e) => addRestaurantData(e)} />
                             </div>
-                        </div>
-                        <div className='form-item'>
-                            <label htmlFor='descriptionLong'>Description</label>
-                            <textarea id='descriptionLong' name='descriptionLong' value={data.descriptionLong} onChange={(e) => updateHotelData(e)}></textarea>
                         </div>
                         <div className="form-item">
-                            {data.imgUrl.length < 5 && (
+                            {data.image_url.length < 5 && (
                                 <div>
                                     <label htmlFor='image'>Upload Image</label>
                                     <input type='file' id='image' name='image' accept='image/*' onChange={handleImageUpload} />
                                 </div>
                             )}
-                            {data.imgUrl.length >= 5 && <p className='warning'>Maximum 5 images allowed.Delete Already uploaded images to add more.</p>}
+                            {data.image_url.length >= 5 && <p className='warning'>Maximum 5 images allowed.Delete Already uploaded images to add more.</p>}
                         </div>
                         <div className="form-item">
                             <h3>Uploaded Images</h3>
                             <div className="image-preview">
-                                {data.imgUrl.map((url, index) => (
+                                {data.image_url.map((url, index) => (
                                     <div className='image' key={index}>
                                         <img src={url} alt={`Uploaded ${index}`} />
                                         <button className='delete-icon' onClick={() => deleteImage(index)}>
@@ -150,7 +128,7 @@ function UpdateHotel() {
                                 ))}
                             </div>
                         </div>
-                        <button onClick={updateDetails}>Update Details</button>
+                        <button onClick={addDetails}>Add New Resturant</button>
                     </div>
                 </div>
             )}
@@ -158,4 +136,4 @@ function UpdateHotel() {
     )
 }
 
-export default UpdateHotel
+export default AddResturant

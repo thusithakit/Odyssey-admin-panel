@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api/api';
 import ListItem from '../components/ListItem';
 import ConfirmationModal from '../modals/ConfirmationModal';
+import Loader from '../components/Loader';
 
 
 function ListView() {
@@ -68,15 +69,16 @@ function ListView() {
     return (
         <div>
             {loading ? (
-                <p>Loading...</p>
+                <Loader />
             ) : (
                 <div>
-                    <div className="title">
-                        <h2>View {apiName}</h2>
+                    <div className="title-sec">
+                        <h2 className='title'>View {apiName}</h2>
+                        <button onClick={() => navigate(`/add/${apiName}`)}>Add {apiName}</button>
                     </div>
                     <div className='list-set'>
                         {data.map((item, index) => (
-                            <ListItem key={index} item={item} handleModalOpen={(id) => handleModalOpen(id)} handleEdit={(id) => handleEdit(id)} />
+                            <ListItem key={index} item={item} apiName={apiName || ''} handleModalOpen={(id) => handleModalOpen(id)} handleEdit={(id) => handleEdit(id)} />
                         ))}
                     </div>
                     <ConfirmationModal modal={modal} handleDelete={(id) => handleDelete(id)} id={id} setModal={setModal} />

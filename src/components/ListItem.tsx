@@ -8,11 +8,12 @@ interface ListItemProps {
         image_url?: string;
         imgUrl?: string[];
     }
+    apiName: string;
     handleModalOpen: (id: string) => void;
     handleEdit: (id: string) => void;
 }
 
-function ListItem({ item, handleModalOpen, handleEdit }: ListItemProps) {
+function ListItem({ item, apiName, handleModalOpen, handleEdit }: ListItemProps) {
 
 
     return (
@@ -23,7 +24,7 @@ function ListItem({ item, handleModalOpen, handleEdit }: ListItemProps) {
                 <p className='pl-5'>{item.username || item.title}</p>
             </div>
             <div className="buttons py-2">
-                <button className='btn-edit' onClick={() => handleEdit(item.id)}>Edit</button>
+                {apiName != 'users' ? <button className='btn-edit' onClick={() => handleEdit(item.id)}>Edit</button> : null}
                 <button className='btn-delete' onClick={() => handleModalOpen(item.id)}>Delete</button>
             </div>
         </div>

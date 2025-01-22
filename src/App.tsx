@@ -6,6 +6,9 @@ import ProtectedRoute from './components/ProtectedRoute'
 import ListView from './pages/ListView'
 import Layout from './pages/Layout'
 import UpdateHotel from './pages/UpdateHotel'
+import UpdateResturant from './pages/UpdateResturant'
+import AddHotel from './pages/AddHotel'
+import AddResturant from './pages/AddResturant'
 
 function App() {
 
@@ -39,9 +42,35 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path='/edit/restaurants/:id'
+              element={
+                <ProtectedRoute>
+                  <UpdateResturant />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='/add/hotels'
+              element={
+                <ProtectedRoute>
+                  <AddHotel />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path='/add/restaurants'
+              element={
+                <ProtectedRoute>
+                  <AddResturant />
+                </ProtectedRoute>
+              }
+            />
+
           </Route>
         </Routes>
-      </BrowserRouter>
+      </BrowserRouter >
     </>
   )
 }

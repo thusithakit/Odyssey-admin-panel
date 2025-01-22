@@ -4,6 +4,11 @@
   box-sizing: border-box;
   scroll-behavior: smooth;
 }
+a.logo{
+  position: relative;
+  display: block;
+  text-decoration: none;
+}
 
 .container {
   position: absolute;
@@ -120,11 +125,22 @@ button {
 
 .title {
   position: relative;
-  padding: 20px;
   font-size: 30px;
   font-weight: bold;
-  padding-bottom: 0px;
   text-transform: capitalize;
+}
+.title-sec {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  padding-bottom: 0px;
+  button {
+    width: fit-content;
+    max-width: 100%;
+    font-weight: 600;
+  }
 }
 
 .list-set-item {
@@ -280,4 +296,91 @@ button {
       }
     }
   }
+}
+
+/* loading Indicator */
+#wrapper{
+	width: 100vw;
+  max-width: 100%;
+	height: 100vh;
+	position: relative;
+	margin: 0;
+	padding: 0;
+}
+
+.spinner {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background: #ffffff center center no-repeat;
+	pointer-events: all;
+	z-index: 1;
+}
+.spinner .loading-container {
+	opacity: 0.8;
+	top: 40%;
+	left: 50%;
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	transform: translate(-25px, -25px);
+}
+.loading-container .ball {
+	background-color: #ffffff00;
+	border: 5px solid rgba(0, 183, 229, 0.9);
+	opacity: 0.9;
+	border-top: 5px solid #ffffff00;
+	border-left: 5px solid #ffffff00;
+	border-radius: 50px;
+	box-shadow: 0 0 35px rgb(33, 135, 231);
+	width: 40px;
+	height: 40px;
+	margin: 0 auto;
+	animation: spin 0.5s infinite linear;
+}
+.loading-container .ball-inner {
+	background-color: #ffffff00;
+	border: 5px solid rgba(0, 183, 229, 0.9);
+	opacity: 0.9;
+	border-top: 5px solid #ffffff00;
+	border-left: 5px solid #ffffff00;
+	border-radius: 50px;
+	box-shadow: 0 0 15px rgb(33, 135, 231);
+	width: 20px;
+	height: 20px;
+	margin: 10px 0 0 10px;
+	position: relative;
+	top: -40px;
+	animation: spin 0.5s infinite reverse linear;
+}
+.ball-text {
+	color: rgba(0, 183, 229, 0.9);
+	text-transform: uppercase;
+	text-align: center;
+	opacity: 0.8;
+	width: 100vw;
+	top: 40%;
+	left: 0;
+	font-size: 15px;
+	position: absolute;
+	transform: translatey(25px);
+	animation: pulse 1s infinite alternate ease-in-out;
+	margin: 0;
+	text-shadow: 0 0 35px rgb(33, 135, 231), 0 0 35px rgb(33, 135, 231), 0 0 35px rgb(33, 135, 231);
+}
+@keyframes pulse {
+	0% {
+		opacity: 0.8;
+	}
+	100% {
+		opacity: 0.4;
+	}
+}
+@keyframes spin {
+	0% {
+		transform:rotate(0deg);
+	}
+	100% { 
+		transform:rotate(360deg); 
+	}
 }
