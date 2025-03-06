@@ -13,6 +13,18 @@ interface Hotel {
     descriptionLong: string;
     imgUrl: string[];
     facilities: string[];
+    minSpend: string;
+}
+
+interface Room {
+    hotelId: string;
+    title: string;
+    subtitle: string;
+    facilities: string[];
+    price: number;
+    discountedPrice: number;
+    avalCount: number;
+    roomImg: string;
 }
 
 function UpdateHotel() {
@@ -25,9 +37,21 @@ function UpdateHotel() {
         locationMap: '',
         descriptionShort: '',
         descriptionLong: '',
+        minSpend: '',
         imgUrl: [],
-        facilities: []
+        facilities: [],
     });
+    const [roomData, setRoomData] = useState<Room>({
+        hotelId: '',
+        title: '',
+        subtitle: '',
+        facilities: [],
+        price: 0,
+        discountedPrice: 0,
+        avalCount: 0,
+        roomImg: ""
+    })
+    const [rooms, setRooms] = useState<Room[]>([]);
     const tokenStr = localStorage.getItem('authToken');
     const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dgjwzufmf/image/upload';
     const UPLOAD_PRESET = 'odyssey';
@@ -36,6 +60,8 @@ function UpdateHotel() {
         setLoading(true);
         try {
             const response = await api.get(`/api/hotels/getHotelById/${id}`, { headers: { "Authorization": `Bearer ${tokenStr}` } });
+            const roomsResponse = await api.get(`/api/hotelRooms/getAllHotelRoomsByHotelId/${id}`, { headers: { "Authorization": `Bearer ${tokenStr}` } });
+            setRooms(roomsResponse.data);
             setData(response.data);
             console.log(data);
         } catch (error) {
@@ -93,6 +119,27 @@ function UpdateHotel() {
         const newImages = data.imgUrl.filter((_img, i) => i !== index);
         setData({ ...data, imgUrl: newImages });
     }
+    const addFacilities = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            const inputValue = e.currentTarget.value;
+            setData((prevData) => ({
+                ...prevData,
+                facilities: [...prevData.facilities, inputValue],
+            }));
+            e.currentTarget.value = '';
+        }
+    }
+    const deleteFacility = (index: number) => {
+        const newFacilities = data.facilities.filter((_facility, i) => i !== index);
+        setData((prevData) => ({
+            ...prevData,
+            facilities: newFacilities,
+        }));
+    }
+    function deleteRoom(index: number) {
+        const newRooms = rooms.filter((_room, i) => i !== index);
+        setRooms(newRooms);
+    }
 
     return (
         <div>
@@ -121,6 +168,10 @@ function UpdateHotel() {
                                 <label htmlFor='descriptionShort'>Short Description</label>
                                 <input type='text' id='descriptionShort' name='descriptionShort' value={data.descriptionShort} onChange={(e) => updateHotelData(e)} />
                             </div>
+                            <div className='form-item'>
+                                <label htmlFor='minSpend'>Minimum Spending Amount</label>
+                                <input type='number' min={0} id='minSpend' name='minSpend' value={data.minSpend} onChange={(e) => updateHotelData(e)} />
+                            </div>
                         </div>
                         <div className='form-item'>
                             <label htmlFor='descriptionLong'>Description</label>
@@ -148,6 +199,47 @@ function UpdateHotel() {
                                         </button>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+                        <div className="form-item">
+                            <label htmlFor="facilities">Facilities</label>
+                            <div className="facilities">
+                                {data.facilities.length != 0 && data.facilities.map((facility, index) => (
+                                    <div className="facility" key={index}>
+                                        <p>{facility}</p>
+                                        <span onClick={() => deleteFacility(index)}>+</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <input type="text" name="facilities" id="hotelFacilities" onKeyDown={(e) => addFacilities(e)} />
+                        </div>
+                        <div className="form-item">
+                            <h2>Change Room Types You Offer</h2>
+                            <div className="room-details">
+
+                                <div className="rooms">
+                                    {rooms.length != 0 && rooms.map((room, index) => (
+                                        <div className="room" key={index}>
+                                            <h3>{room.title}</h3>
+                                            <p>{room.subtitle}</p>
+                                            <p>Price: {room.price}</p>
+                                            <p>Discounted Price: {room.discountedPrice}</p>
+                                            <p>Available Rooms: {room.avalCount}</p>
+                                            <div className="facilities">
+                                                {room.facilities.length != 0 && room.facilities.map((facility, index) => (
+                                                    <div className="facility" key={index}>
+                                                        <p>{facility}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <button className='delete-icon' onClick={() => deleteRoom(index)}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="15" height="15" viewBox="0 0 30 30">
+                                                    <path d="M 7 4 C 6.744125 4 6.4879687 4.0974687 6.2929688 4.2929688 L 4.2929688 6.2929688 C 3.9019687 6.6839688 3.9019687 7.3170313 4.2929688 7.7070312 L 11.585938 15 L 4.2929688 22.292969 C 3.9019687 22.683969 3.9019687 23.317031 4.2929688 23.707031 L 6.2929688 25.707031 C 6.6839688 26.098031 7.3170313 26.098031 7.7070312 25.707031 L 15 18.414062 L 22.292969 25.707031 C 22.682969 26.098031 23.317031 26.098031 23.707031 25.707031 L 25.707031 23.707031 C 26.098031 23.316031 26.098031 22.682969 25.707031 22.292969 L 18.414062 15 L 25.707031 7.7070312 C 26.098031 7.3170312 26.098031 6.6829688 25.707031 6.2929688 L 23.707031 4.2929688 C 23.316031 3.9019687 22.682969 3.9019687 22.292969 4.2929688 L 15 11.585938 L 7.7070312 4.2929688 C 7.5115312 4.0974687 7.255875 4 7 4 z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                         <button onClick={updateDetails}>Update Details</button>

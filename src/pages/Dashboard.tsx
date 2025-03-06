@@ -17,6 +17,7 @@ function Dashboard() {
     const [hotels, setHotels] = useState([]);
     const [resturents, setResturents] = useState([]);
     const [users, setUsers] = useState([]);
+    const [tours, setTours] = useState([]);
     const [loading, setLoading] = useState(false);
     const getHotels = async (tokenStr: String) => {
         try {
@@ -54,6 +55,18 @@ function Dashboard() {
         }
     }
 
+    const getTours = async (tokenStr: String) => {
+        try {
+            setLoading(true)
+            const response = await api.get(`/api/tours/getAllTours`, { headers: { "Authorization": `Bearer ${tokenStr}` } });
+            setTours(response.data);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false)
+        }
+    }
+
     useEffect(() => {
         const userId = localStorage.getItem('userId');
         const tokenStr = localStorage.getItem('authToken');
@@ -61,6 +74,7 @@ function Dashboard() {
             getHotels(tokenStr);
             getResturents(tokenStr);
             getUsers(tokenStr);
+            getTours(tokenStr);
         }
     }, [])
 
@@ -72,6 +86,7 @@ function Dashboard() {
                     <div className="cards">
                         <CountCard title='Total Hotels' count={hotels.length} details={hotels} apiName='hotels' />
                         <CountCard title='Total Restaurants' count={resturents.length} details={resturents} apiName='restaurants' />
+                        <CountCard title='Total Tours' count={tours.length} details={tours} apiName='tours' />
                         <CountCard title='Total Users' count={users.length} details={users} apiName='users' />
                     </div>
                 )}

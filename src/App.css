@@ -6,7 +6,7 @@
 }
 a.logo{
   position: relative;
-  display: block;
+  display: flex;
   text-decoration: none;
 }
 
@@ -112,6 +112,9 @@ button {
   }
   &:nth-child(3){
     background: linear-gradient(#03c146,#1dd887);
+  }
+  &:nth-child(4){
+    background: linear-gradient(#c13903,#d8771d);
   }
   transition: 0.4s ease-in;
   cursor: pointer;
@@ -383,4 +386,69 @@ button {
 	100% { 
 		transform:rotate(360deg); 
 	}
+}
+
+.facilities {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.facilities .facility {
+  position: relative;
+  width: fit-content;
+  padding: 5px 10px;
+  background-color: #ddd;
+  border-radius: 4px;
+  display: flex;
+  gap: 5px;
+}
+
+.facilities .facility span {
+  cursor: pointer;
+  color: #d8361d;
+  font-weight: 800;
+  transform: rotate(45deg);
+  line-height: normal;
+  padding: 0;
+}
+
+.room-details {
+  position: relative;
+  padding: 30px 0px;
+  .rooms{
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    .room {
+      position: relative;
+      padding: 20px 10px;
+      border-radius: 4px;
+      background-color: #eee;
+      button.delete-icon {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: fit-content;
+        font-size: 12px;
+        font-weight: bolder;
+        line-height: normal;
+        margin: 0;
+        background: #c12203;
+        width: 25px;
+        height: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transform: translate(50%, -50%);
+        padding: 0;
+        svg {
+          stroke: #fff;
+          fill: #fff;
+        }
+      }
+    }
+  }
 }

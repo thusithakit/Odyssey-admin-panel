@@ -1,46 +1,63 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom';
 import api from '../api/api';
 import axios from 'axios';
 import Loader from '../components/Loader';
 
-interface Resturant {
-    title: string;
-    location_city: string;
-    location_country: string;
-    location_map: string;
-    description: string;
-    image_url: string[];
-    facilities: string[];
-    minSpend: string;
+interface Tour {
+    title: string,
+    location_city: string,
+    location_country: string,
+    location_map: string,
+    description: string,
+    image_url: string[],
+    facilities: string[],
+    guide_languages: string[],
+    pricePerOnePerson: string
 }
 
-function AddResturant() {
+function UpdateTour() {
+    const { id } = useParams();
     const [loading, setLoading] = useState(false);
-    const [data, setData] = useState<Resturant>({
-        title: '',
-        location_city: '',
-        location_country: '',
-        location_map: '',
-        description: '',
-        image_url: [],
-        facilities: [],
-        minSpend: '',
-    });
+    const [data, setData] = useState<Tour>({
+        "title": "",
+        "location_city": "",
+        "location_country": "",
+        "location_map": "",
+        "description": "",
+        "image_url": [],
+        "facilities": [],
+        "guide_languages": [],
+        "pricePerOnePerson": ""
+    })
     const tokenStr = localStorage.getItem('authToken');
     const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dgjwzufmf/image/upload';
     const UPLOAD_PRESET = 'odyssey';
-
-    function addRestaurantData(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-        setData({ ...data, [e.target.name]: e.target.value });
-    }
-    async function addDetails() {
+    const fetchData = async () => {
         setLoading(true);
         try {
-            await api.post(`/api/restaurant/addRestaurant`, data, { headers: { "Authorization": `Bearer ${tokenStr}` } });
+            const response = await api.get(`/api/tours/getTourById/${id}`, { headers: { "Authorization": `Bearer ${tokenStr}` } });
+            setData(response.data);
+            console.log(data);
         } catch (error) {
             console.log(error);
         } finally {
-            setData({ title: '', location_city: '', location_country: '', location_map: '', description: '', image_url: [], facilities: [], minSpend: '' });
+            setLoading(false);
+        }
+    }
+    useEffect(() => {
+        fetchData();
+    }, [id]);
+    function updateTourData(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+        setData({ ...data, [e.target.name]: e.target.value });
+    }
+    async function updateDetails() {
+        setLoading(true);
+        try {
+            await api.put(`/api/tours/updateTour/${id}`, data, { headers: { "Authorization": `Bearer ${tokenStr}` } });
+        } catch (error) {
+            console.log(error);
+        } finally {
             setLoading(false);
         }
     }
@@ -94,39 +111,56 @@ function AddResturant() {
             facilities: newFacilities,
         }));
     }
-
+    const addLanguage = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            const inputValue = e.currentTarget.value;
+            setData((prevData) => ({
+                ...prevData,
+                guide_languages: [...prevData.guide_languages, inputValue],
+            }));
+            e.currentTarget.value = '';
+        }
+    }
+    const deleteLanguage = (index: number) => {
+        const newGuideLanguages = data.guide_languages.filter((_language, i) => i !== index);
+        setData((prevData) => ({
+            ...prevData,
+            guide_languages: newGuideLanguages,
+        }));
+    }
     return (
         <div>
             {loading ? <Loader /> : (
                 <div className='main-container'>
-                    <h1>Add a New Resturant</h1>
+                    <h1>Edit Tour Details</h1>
                     <div className='form-group'>
                         <div className="form-grid">
                             <div className='form-item'>
                                 <label htmlFor='title'>title</label>
-                                <input type='text' id='title' name='title' value={data.title} onChange={(e) => addRestaurantData(e)} />
+                                <input type='text' id='title' name='title' value={data.title} onChange={(e) => updateTourData(e)} />
                             </div>
                             <div className='form-item'>
                                 <label htmlFor='location_city'>City</label>
-                                <input type='text' id='location_city' name='location_city' value={data.location_city} onChange={(e) => addRestaurantData(e)} />
+                                <input type='text' id='location_city' name='location_city' value={data.location_city} onChange={(e) => updateTourData(e)} />
                             </div>
                             <div className='form-item'>
                                 <label htmlFor='location_country'>Country</label>
-                                <input type='text' id='location_country' name='location_country' value={data.location_country} onChange={(e) => addRestaurantData(e)} />
+                                <input type='text' id='location_country' name='location_country' value={data.location_country} onChange={(e) => updateTourData(e)} />
                             </div>
                             <div className='form-item'>
                                 <label htmlFor='location_map'>Google Maps Location Link</label>
-                                <input type='text' id='location_map' name='location_map' value={data.location_map} onChange={(e) => addRestaurantData(e)} />
+                                <input type='text' id='location_map' name='location_map' value={data.location_map} onChange={(e) => updateTourData(e)} />
                             </div>
                             <div className='form-item'>
-                                <label htmlFor='description'>Short Description</label>
-                                <input type='text' id='description' name='description' value={data.description} onChange={(e) => addRestaurantData(e)} />
-                            </div>
-                            <div className='form-item'>
-                                <label htmlFor='minSpend'>Minimum Spend</label>
-                                <input type='text' id='minSpend' name='minSpend' value={data.minSpend} onChange={(e) => addRestaurantData(e)} />
+                                <label htmlFor='pricePerOnePerson'>Price Per One User</label>
+                                <input type='number' min={0} id='pricePerOnePerson' name='pricePerOnePerson' value={data.pricePerOnePerson} onChange={(e) => updateTourData(e)} />
                             </div>
 
+                        </div>
+
+                        <div className='form-item'>
+                            <label htmlFor='description'>Short Description</label>
+                            <textarea id='description' name='description' value={data.description} onChange={(e) => updateTourData(e)} />
                         </div>
                         <div className="form-item">
                             <label htmlFor="facilities">Facilities</label>
@@ -139,6 +173,18 @@ function AddResturant() {
                                 ))}
                             </div>
                             <input type="text" name="facilities" id="hotelFacilities" onKeyDown={(e) => addFacilities(e)} />
+                        </div>
+                        <div className="form-item">
+                            <label htmlFor="languages">Supported Languages by the Guide</label>
+                            <div className="facilities">
+                                {data.guide_languages.length != 0 && data.guide_languages.map((facility, index) => (
+                                    <div className="facility" key={index}>
+                                        <p>{facility}</p>
+                                        <span onClick={() => deleteLanguage(index)}>+</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <input type="text" name="languages" id="languages" onKeyDown={(e) => addLanguage(e)} />
                         </div>
                         <div className="form-item">
                             {data.image_url.length < 5 && (
@@ -164,7 +210,7 @@ function AddResturant() {
                                 ))}
                             </div>
                         </div>
-                        <button onClick={addDetails}>Add New Resturant</button>
+                        <button onClick={updateDetails}>Update Tour Details</button>
                     </div>
                 </div>
             )}
@@ -172,4 +218,4 @@ function AddResturant() {
     )
 }
 
-export default AddResturant
+export default UpdateTour

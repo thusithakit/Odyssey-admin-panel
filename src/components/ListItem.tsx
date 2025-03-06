@@ -19,7 +19,7 @@ function ListItem({ item, apiName, handleModalOpen, handleEdit }: ListItemProps)
     return (
         <div className='list-set-item'>
             <div className='flex relative justify-center items-center gap-5'>
-                {item.image_url && item.image_url.length > 0 && <img loading='lazy' className='list-image' src={item.image_url} alt="img" />}
+                {item.image_url && item.image_url.length > 0 && <img loading='lazy' className='list-image' src={item.image_url[0]} alt="img" />}
                 {item.imgUrl && item.imgUrl.length > 0 && <img loading='lazy' className='list-image' src={item.imgUrl[0]} alt="img" />}
                 <p className='pl-5'>{item.username || item.title}</p>
             </div>

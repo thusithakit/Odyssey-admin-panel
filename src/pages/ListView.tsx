@@ -17,19 +17,26 @@ function ListView() {
     const apiEndPoints: { [key: string]: string } = {
         hotels: '/api/hotels/getAllHotels',
         restaurants: '/api/restaurant/getAllRestaurant',
-        users: '/api/users/getAllUsers'
+        users: '/api/users/getAllUsers',
+        tours: '/api/tours/getAllTours'
     };
     const deleteApiEndPoints: { [key: string]: string } = {
         hotels: '/api/hotels/deleteHotel/',
         restaurants: '/api/restaurant/deleteRestaurant/',
-        users: '/api/users/'
+        users: '/api/users/',
+        tours: '/api/tours/deleteTour/'
     };
     const fetchData = async () => {
         setLoading(true);
         try {
             if (apiName && apiEndPoints[apiName]) {
                 const response = await api.get(apiEndPoints[apiName], { headers: { "Authorization": `Bearer ${tokenStr}` } });
-                setData(response.data);
+                if (apiName === 'users') {
+                    const filteredData = response.data.filter((user: any) => user.role !== 'SUPER_ADMIN');
+                    setData(filteredData.filter((user: any) => user.id !== localStorage.getItem('userId')));
+                } else {
+                    setData(response.data);
+                }
             } else {
                 console.log('Invalid API name');
             }

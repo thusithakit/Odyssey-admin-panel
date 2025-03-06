@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { login } from '../auth/auth';
+import api from '../api/api';
 
 function Login() {
     const navigate = useNavigate();
@@ -17,11 +18,26 @@ function Login() {
             const { token, userId } = await login(credentials.username, credentials.password); // Call the login function
             localStorage.setItem('authToken', token); // Save the token
             localStorage.setItem('userId', userId);
-            navigate('/'); // Redirect to the dashboard
+            getUserType(userId);
+            // navigate('/'); // Redirect to the dashboard
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed');
         }
     };
+    const getUserType = async (userId: string) => {
+        try {
+            const response = await api.get(`/api/users/${userId}`, { headers: { "Authorization": `Bearer ${localStorage.getItem('authToken')}` } });
+            const userType = response.data.role;
+            if (userType === 'SUPER_ADMIN' || userType === 'ADMIN') {
+                navigate('/');
+            }
+            else {
+                setError('You are not authorized to login. Please Login with Admin Credentials');
+            }
+        } catch (err: any) {
+            console.log(err);
+        }
+    }
 
     return (
         <div className='container flex flex-col align-middle justify-center gap-10 w-[600px]'>

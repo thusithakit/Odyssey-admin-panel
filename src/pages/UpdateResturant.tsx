@@ -12,6 +12,7 @@ interface Resturant {
     description: string;
     image_url: string[];
     facilities: string[];
+    minSpend: string;
 }
 
 function UpdateResturant() {
@@ -24,7 +25,8 @@ function UpdateResturant() {
         location_map: '',
         description: '',
         image_url: [],
-        facilities: []
+        facilities: [],
+        minSpend: '',
     });
     const tokenStr = localStorage.getItem('authToken');
     const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dgjwzufmf/image/upload';
@@ -92,6 +94,24 @@ function UpdateResturant() {
         setData({ ...data, image_url: newImages });
     }
 
+    const addFacilities = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            const inputValue = e.currentTarget.value;
+            setData((prevData) => ({
+                ...prevData,
+                facilities: [...prevData.facilities, inputValue],
+            }));
+            e.currentTarget.value = '';
+        }
+    }
+    const deleteFacility = (index: number) => {
+        const newFacilities = data.facilities.filter((_facility, i) => i !== index);
+        setData((prevData) => ({
+            ...prevData,
+            facilities: newFacilities,
+        }));
+    }
+
     return (
         <div>
             {loading ? <Loader /> : (
@@ -119,6 +139,22 @@ function UpdateResturant() {
                                 <label htmlFor='description'>Short Description</label>
                                 <input type='text' id='description' name='description' value={data.description} onChange={(e) => updateRestaurantData(e)} />
                             </div>
+                            <div className='form-item'>
+                                <label htmlFor='minSpend'>Minimum Spend</label>
+                                <input type='text' id='minSpend' name='minSpend' value={data.minSpend} onChange={(e) => updateRestaurantData(e)} />
+                            </div>
+                        </div>
+                        <div className="form-item">
+                            <label htmlFor="facilities">Facilities</label>
+                            <div className="facilities">
+                                {data.facilities.length != 0 && data.facilities.map((facility, index) => (
+                                    <div className="facility" key={index}>
+                                        <p>{facility}</p>
+                                        <span onClick={() => deleteFacility(index)}>+</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <input type="text" name="facilities" id="hotelFacilities" onKeyDown={(e) => addFacilities(e)} />
                         </div>
                         <div className="form-item">
                             {data.image_url.length < 5 && (

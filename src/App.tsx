@@ -9,6 +9,9 @@ import UpdateHotel from './pages/UpdateHotel'
 import UpdateResturant from './pages/UpdateResturant'
 import AddHotel from './pages/AddHotel'
 import AddResturant from './pages/AddResturant'
+import AddTours from './pages/AddTours'
+import UpdateTour from './pages/UpdateTour'
+import AddUser from './pages/AddUser'
 
 function App() {
 
@@ -51,6 +54,14 @@ function App() {
               }
             />
             <Route
+              path='/edit/tours/:id'
+              element={
+                <ProtectedRoute>
+                  <UpdateTour />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path='/add/hotels'
               element={
                 <ProtectedRoute>
@@ -67,8 +78,25 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path='/add/tours'
+              element={
+                <ProtectedRoute>
+                  <AddTours />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path='/add/users'
+              element={
+                <ProtectedRoute>
+                  <AddUser />
+                </ProtectedRoute>
+              }
+            />
 
           </Route>
+
         </Routes>
       </BrowserRouter >
     </>
